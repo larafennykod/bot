@@ -1,23 +1,36 @@
 import discord
+from discord.ext import commands
+import random
+
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix="$", intents=intents)
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'Abbiamo fatto l\'accesso come {client.user}')
+    print(f'Abbiamo fatto l\'accesso come {bot.user}')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
+@bot.command()
+async def ciao(ctx):
+    await ctx.send("Ciaooooooo")
+    
+
+@bot.command()
+async def roll(ctx, dice: str):
+    """Rolls a dice in NdN format."""
+    try:
+        rolls, limit = map(int, dice.split('d'))
+    except Exception:
+        await ctx.send('Format has to be in NdN!')
         return
-    if message.content.startswith('$ciao'):
-        await message.channel.send("Ciao!")
-    elif message.content.startswith('$arrivederci'):
-        await message.channel.send("\U0001f642")
-    else:
-        await message.channel.send(message.content)
 
-client.run("token")
+    result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
+    await ctx.send(result)
+
+
+
+
+
+bot.run("t")oken
